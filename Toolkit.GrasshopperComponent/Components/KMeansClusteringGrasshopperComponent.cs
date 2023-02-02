@@ -37,7 +37,7 @@ namespace Toolkit.GrasshopperComponent.Components
         /// </summary>
         protected override void RegisterOutputParams(GH_OutputParamManager pManager)
         {
-            pManager.AddBrepParameter("Surfaces", "Surf", "Surf", GH_ParamAccess.list);
+            pManager.AddGenericParameter("Clusters", "Surf", "Surf", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Toolkit.GrasshopperComponent.Components
             if (!DA.GetData(1, ref numberOfClusters)) return;
 
             int optimalNumberOfClusters = CalinskiHarabaszIndex.Compute(surfaces, 1, 10);
-            List<List<Brep>> clusters = KMeansCluster.GetClusters(optimalNumberOfClusters, surfaces);
+            List<Cluster> clusters = KMeansCluster.GetClusters(optimalNumberOfClusters, surfaces);
 
             DA.SetDataList(0, clusters);
 

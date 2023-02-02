@@ -7,20 +7,22 @@ using System.Threading.Tasks;
 
 namespace Rhino.Algorithms.Toolkit
 {
-    class Cluster
+    public class Cluster
     {
-        public Point3d Centroid { get; set; }
-        public List<Point3d> Points { get; set; }
+        public List<Brep> Breps { get; set; }
 
-        public Cluster(Point3d centroid)
+        public Cluster()
         {
-            Centroid = centroid;
-            Points = new List<Point3d>();
+            Breps = new List<Brep>();
         }
 
-        public void AddPoint(Point3d point)
+        public void AddBrep(Brep brep)
         {
-            Points.Add(point);
+            Breps.Add(brep);
+        }
+        public void AddBreps(List<Brep> breps)
+        {
+            Breps.AddRange(breps);
         }
     }
 }

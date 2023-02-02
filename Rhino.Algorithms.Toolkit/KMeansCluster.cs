@@ -10,21 +10,21 @@ namespace Rhino.Algorithms.Toolkit
 {
     public static class KMeansCluster
     {
-        public static List<List<Brep>> GetClusters(int numberOfClusters, List<Brep> surfaces)
+        public static List<Cluster> GetClusters(int numberOfClusters, List<Brep> surfaces)
         {
-            List<List<Brep>> clusters = Cluster(surfaces, numberOfClusters);
+            List<Cluster> clusters = Cluster(surfaces, numberOfClusters);
 
             foreach (var cluster in clusters)
             {
                 System.Console.WriteLine("Cluster:");
-                foreach (var surface in cluster)
+                foreach (var surface in cluster.Breps)
                 {
                     System.Console.WriteLine(surface.ToString());
                 }
             }
             return clusters;
         }
-        public static List<List<Brep>> Cluster(List<Brep> surfaces, int numberOfClusters)
+        public static List<Cluster> Cluster(List<Brep> surfaces, int numberOfClusters)
         {
             Point3d[] centroids = new Point3d[numberOfClusters];
             for (int i = 0; i < numberOfClusters; i++)
@@ -32,10 +32,12 @@ namespace Rhino.Algorithms.Toolkit
                 centroids[i] = surfaces[i].GetBoundingBox(false).Center;
             }
 
-            List<List<Brep>> clusters = new List<List<Brep>>();
+            List<Cluster> clusters = new List<Cluster>();
             for (int i = 0; i < numberOfClusters; i++)
             {
-                clusters.Add(new List<Brep>());
+                Cluster tempCluster = new Cluster();
+                tempCluster.AddBreps(new List<Brep>());
+                clusters.Add(tempCluster);
             }
 
             int iterations = 100;
@@ -43,7 +45,7 @@ namespace Rhino.Algorithms.Toolkit
             {
                 foreach (var cluster in clusters)
                 {
-                    cluster.Clear();
+                    cluster.Breps.Clear();
                 }
 
                 foreach (var surface in surfaces)
@@ -60,17 +62,17 @@ namespace Rhino.Algorithms.Toolkit
                             closestCentroidDistance = distance;
                         }
                     }
-                    clusters[closestCentroidIndex].Add(surface);
+                    clusters[closestCentroidIndex].Breps.Add(surface);
                 }
 
                 for (int j = 0; j < numberOfClusters; j++)
                 {
                     Point3d newCentroid = Point3d.Origin;
-                    foreach (var surface in clusters[j])
+                    foreach (var surface in clusters[j].Breps)
                     {
                         newCentroid += surface.GetBoundingBox(false).Center;
                     }
-                    newCentroid /= clusters[j].Count;
+                    newCentroid /= clusters[j].Breps.Count;
                     centroids[j] = newCentroid;
                 }
             }
