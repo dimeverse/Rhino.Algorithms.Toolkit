@@ -14,18 +14,18 @@ public static class CalinskiHarabaszIndex
         for (int k = minClusters; k <= maxClusters; k++)
         {
             // Perform k-means clustering
-            List<List<Brep>> clusters = KMeansCluster.Cluster(breps, k);
+            List<Cluster> clusters = KMeansCluster.Cluster(breps, k);
 
             // Compute the centroids of the clusters
             centroids.Clear();
-            foreach (List<Brep> cluster in clusters)
+            foreach (var cluster in clusters)
             {
                 Point3d centroid = Point3d.Origin;
-                foreach (Brep brep in cluster)
+                foreach (Brep brep in cluster.Breps)
                 {
                     centroid += brep.GetBoundingBox(true).Center;
                 }
-                centroid /= cluster.Count;
+                centroid /= cluster.Breps.Count;
                 centroids.Add(centroid);
             }
 
@@ -34,7 +34,7 @@ public static class CalinskiHarabaszIndex
             for (int i = 0; i < k; i++)
             {
                 Point3d centroid = centroids[i];
-                foreach (Brep brep in clusters[i])
+                foreach (Brep brep in clusters[i].Breps)
                 {
                     Point3d bbCenter = brep.GetBoundingBox(true).Center;
                     ssw += (bbCenter - centroid).SquareLength;
@@ -52,7 +52,7 @@ public static class CalinskiHarabaszIndex
             double ssb = 0;
             for (int i = 0; i < k; i++)
             {
-                ssb += (centroids[i] - overallCentroid).SquareLength * clusters[i].Count;
+                ssb += (centroids[i] - overallCentroid).SquareLength * clusters[i].Breps.Count;
             }
 
             // Compute the Calinski-Harabasz Index
